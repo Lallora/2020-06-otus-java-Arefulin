@@ -7,6 +7,6 @@
 ---
 # Content
 * [HW 01](./hw01-gradle) - create gradle repo with submodules (Build lesson)
-
+* [HW 02](./hw02-DIYArray) - custom data structure implementation (Generics lesson)
 
 
