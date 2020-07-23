@@ -1,0 +1,40 @@
+plugins {
+    // Apply the java plugin to add support for Java
+    id 'java'
+    id 'idea' apply true
+    id 'com.github.johnrengelman.shadow'
+    id 'application'
+}
+
+sourceCompatibility = JavaVersion.VERSION_14
+targetCompatibility = JavaVersion.VERSION_14
+
+repositories {
+    // Use jcenter for resolving dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    jcenter()
+}
+
+dependencies {
+    testImplementation 'junit:junit'
+}
+
+application {
+    // Define the main class for the application.
+    mainClassName = 'ru.otus.Main'
+}
+
+shadowJar {
+    archiveBaseName.set('hw02-DIYArray')
+    archiveVersion.set('0.1')
+    archiveClassifier.set('')
+    manifest {
+        attributes 'Main-Class': 'ru.otus.Main'
+    }
+}
+
+tasks.build.dependsOn tasks.shadowJar
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '6.5.1'
+}
