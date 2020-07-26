@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/hw01-gradle" />
             <option value="$PROJECT_DIR$/hw02-DIYArray" />
+            <option value="$PROJECT_DIR$/hw03-reflection" />
           </set>
         </option>
         <option name="useQualifiedModuleNames" value="true" />
