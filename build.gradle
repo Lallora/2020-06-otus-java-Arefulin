@@ -29,6 +29,9 @@ allprojects {
         dependencyManagement {
             dependencies {
                 dependency("com.google.guava:guava:${Versions.guava}")
+//                dependency("com.google.protobuf:protobuf-java-util:${Versions.protobuf}")
+//                dependency("org.junit.jupiter:junit-jupiter-api:${Versions.junit}")
+//                dependency("org.junit.jupiter:junit-jupiter-engine:${Versions.junit}")
             }
         }
     }
