@@ -1,4 +1,0 @@
-rootProject.name = 'otus_java_2020_06'
-include 'hw01-gradle'
-include 'hw02-DIYArray'
-include 'hw03-reflection'

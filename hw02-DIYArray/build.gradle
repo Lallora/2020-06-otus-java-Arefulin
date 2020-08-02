@@ -16,7 +16,16 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'junit:junit'
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.2'
+//    testImplementation 'junit:junit'
+//    testImplementation 'org.junit.jupiter:junit-jupiter-engine'
+//    testImplementation 'org.openjdk.jmh:jmh-core'
+//    testAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess'
+
+}
+
+test {
+    useJUnitPlatform()
 }
 
 application {
