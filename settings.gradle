@@ -1,0 +1,5 @@
+rootProject.name = '2020-06-otus-java-Arefulin'
+include 'hw01-gradle'
+include 'hw02-DIYArray'
+include 'hw03-reflection'
+include 'hw04-GC'
