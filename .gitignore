@@ -12,6 +12,7 @@
 
 # Package Files #
 *.jar
+!gradle-wrapper.jar
 *.war
 *.nar
 *.ear
@@ -27,10 +28,10 @@ hs_err_pid*
 
 # Ignore Gradle build output directory
 build
+out
 
 #Idea
 *.iml
 *.iws
 *.ipr
 *.idea
-/.metadata/
