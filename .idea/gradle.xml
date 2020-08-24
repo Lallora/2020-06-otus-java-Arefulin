@@ -16,6 +16,7 @@
             <option value="$PROJECT_DIR$/hw03-reflection" />
             <option value="$PROJECT_DIR$/hw04-GC" />
             <option value="$PROJECT_DIR$/hw05-AOP" />
+            <option value="$PROJECT_DIR$/hw06-ATM" />
           </set>
         </option>
       </GradleProjectSettings>

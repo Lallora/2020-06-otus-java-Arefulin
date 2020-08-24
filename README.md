@@ -11,5 +11,6 @@
 * [HW 03](./hw03-reflection) - simple test framework (Reflection lesson)
 * [HW 04](./hw04-GC) - Comparison of different garbage collectors (Garbage collectors lesson)
 * [HW 05](./hw05-AOP) - Automatic logging (Aspect-oriented programming lesson)
+* [HW 06](./hw06-ATM) - ATM emulator (SOLID lesson)
 
 
