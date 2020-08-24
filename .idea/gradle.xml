@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/hw02-DIYArray" />
             <option value="$PROJECT_DIR$/hw03-reflection" />
             <option value="$PROJECT_DIR$/hw04-GC" />
+            <option value="$PROJECT_DIR$/hw05-AOP" />
           </set>
         </option>
       </GradleProjectSettings>
