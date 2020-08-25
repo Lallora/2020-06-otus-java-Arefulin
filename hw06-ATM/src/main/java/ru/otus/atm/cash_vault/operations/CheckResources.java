@@ -1,11 +1,11 @@
 package ru.otus.atm.cash_vault.operations;
 
 import ru.otus.atm.cash_vault.cells.Cell;
-import ru.otus.atm.cash_vault.operations.interfaces.ICheckResources;
+import ru.otus.atm.cash_vault.operations.interfaces.IOperation;
 import ru.otus.atm.cash_vault.services.ServiceTuple;
 import ru.otus.atm.cash_vault.services.Setup;
 
-public class CheckResources implements ICheckResources {
+public class CheckResources implements IOperation {
 
     public static int execute(ServiceTuple serviceTuple) {
         int checkPossibility = Setup.CHECK_PASSED;

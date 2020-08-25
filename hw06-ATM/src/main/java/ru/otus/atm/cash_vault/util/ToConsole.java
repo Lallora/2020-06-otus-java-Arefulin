@@ -5,13 +5,13 @@ import static ru.otus.atm.cash_vault.services.Setup.*;
 
 public class ToConsole {
 
-    public static void print(boolean executionControl, String msg) {
+    public static void print(String msg) {
         if (executionControl) {
             out.println(msg);
         }
     }
 
-    public static void print(boolean executionControl, String msg, int color) {
+    public static void print(String msg, int color) {
         if (executionControl) {
             switch (color) {
                 case RED:

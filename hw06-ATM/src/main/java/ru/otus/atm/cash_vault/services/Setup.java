@@ -23,4 +23,5 @@ public class Setup {
     public static final int RED = 501;
     public static final int GREEN = 502;
     public static final int BLUE = 503;
+    public static final boolean executionControl = true;
 }

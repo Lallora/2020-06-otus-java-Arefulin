@@ -40,13 +40,13 @@ public class ATM implements IATM {
             int checkResources = CheckResources.execute(serviceTuple);
             switch (checkResources) {
                 case Setup.CHECK_PASSED:
-                    ToConsole.print(executionControl, Setup.STR_OPERATION_APPROVED, GREEN);
-                    ToConsole.print(executionControl, Setup.STR_PREPARED_ISSUANCE +
+                    ToConsole.print(Setup.STR_OPERATION_APPROVED, GREEN);
+                    ToConsole.print(Setup.STR_PREPARED_ISSUANCE +
                             serviceTuple.listStrMaxAmountCalculation.get(0).substring(3) + " = " + requiredAmount + "\n" +
                             Setup.STR_ISSUANCE);
                     return IssueBills.execute(serviceTuple);
                 case Setup.CHECK_FAIL_NO_SUCH_AMOUNT:
-                    ShowCashDispenserInfo.execute(executionControl, listCellsWithBanknotes);
+                    ShowCashDispenserInfo.execute(listCellsWithBanknotes);
                     return Setup.CHECK_FAIL_NO_SUCH_AMOUNT;
                 case Setup.CHECK_FAIL_NOT_ENOUGH_BILLS:
                     return Setup.CHECK_FAIL_NOT_ENOUGH_BILLS;

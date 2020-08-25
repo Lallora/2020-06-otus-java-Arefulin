@@ -3,6 +3,7 @@ package ru.otus;
 import ru.otus.atm.cash_vault.ATM;
 import ru.otus.atm.cash_vault.services.Setup;
 import ru.otus.atm.cash_vault.util.ToConsole;
+import ru.otus.atm.cash_vault.util.printResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,28 +26,10 @@ public class Main {
         listGetMoney.add(9800);
         listGetMoney.add(9800);
         for (int i = 0; i < listGetMoney.size(); i++) {
-            ToConsole.print(executionControl, Setup.STR_SEPARATE_LINE);
-            ToConsole.print(executionControl, Setup.STR_REQUESTED_BY_USER + listGetMoney.get(i), BLUE);
-
+            ToConsole.print(Setup.STR_SEPARATE_LINE);
+            ToConsole.print(Setup.STR_REQUESTED_BY_USER + listGetMoney.get(i), BLUE);
             result = cd.getAmount(listGetMoney.get(i));
-
-            switch (result) {
-                case Setup.CHECK_FAIL_INCORRECT_INPUT_DATA:
-                    ToConsole.print(executionControl, Setup.STR_CHECK_FAIL_INCORRECT_INPUT_DATA, RED);
-                    break;
-                case Setup.CHECK_FAIL_NO_SUCH_AMOUNT:
-                    ToConsole.print(executionControl, Setup.STR_CHECK_FAIL_NO_SUCH_AMOUNT + listGetMoney.get(i), RED);
-                    break;
-                case Setup.CHECK_FAIL_NOT_ENOUGH_BILLS:
-                    ToConsole.print(executionControl, Setup.STR_CHECK_FAIL_NOT_ENOUGH_BILLS, RED);
-                    break;
-                case Setup.SOMETHING_WRONG:
-                    ToConsole.print(executionControl, Setup.STR_SOMETHING_WRONG, RED);
-                    break;
-                case Setup.CHECK_PASSED:
-                    ToConsole.print(executionControl, Setup.STR_CHECK_PASSED + listGetMoney.get(i), GREEN);
-                    break;
-            }
+            printResult.execute(result, listGetMoney.get(i));
         }
     }
 }
