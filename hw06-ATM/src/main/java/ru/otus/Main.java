@@ -15,6 +15,7 @@ public class Main {
         final boolean executionControl = true;
         int result;
         ATM cd = new ATM(executionControl);
+
         List<Integer> listGetMoney = new ArrayList<>();
         listGetMoney.add(9800);
         listGetMoney.add(50000);
@@ -25,10 +26,13 @@ public class Main {
         listGetMoney.add(9800);
         listGetMoney.add(9800);
         listGetMoney.add(9800);
+
         for (int i = 0; i < listGetMoney.size(); i++) {
             ToConsole.print(Setup.STR_SEPARATE_LINE);
             ToConsole.print(Setup.STR_REQUESTED_BY_USER + listGetMoney.get(i), BLUE);
+
             result = cd.getAmount(listGetMoney.get(i));
+
             printResult.execute(result, listGetMoney.get(i));
         }
     }

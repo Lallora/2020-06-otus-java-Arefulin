@@ -26,34 +26,52 @@ public class ATM implements IATM {
 
     public int getAmount(int requiredAmount) {
         String maxAmountCalculation;
-        ServiceTuple serviceTuple = new ServiceTuple();
-        List<Integer> listBillNumbersInCells = new ArrayList<>();
-        List<String> listStrMaxAmountCalculation = new ArrayList<>();
         int checkInputData = CheckInputData.execute(requiredAmount);
-        if (checkInputData == Setup.CHECK_PASSED) {
-            serviceTuple.executionControl = executionControl;
-            serviceTuple.requiredAmount = requiredAmount;
-            serviceTuple.listIntBillNumbersInCells = listBillNumbersInCells;
-            serviceTuple.listCellsWithBanknotes = listCellsWithBanknotes;
-            serviceTuple.listStrMaxAmountCalculation = listStrMaxAmountCalculation;
+        return tryGetAmount(requiredAmount, checkInputData);
+    }
 
+    private int tryGetAmount(int requiredAmount, int checkInputData) {
+        if (checkInputData == Setup.CHECK_PASSED) {
+            List<Integer> listBillNumbersInCells = new ArrayList<>();
+            List<String> listStrMaxAmountCalculation = new ArrayList<>();
+            ServiceTuple serviceTuple = new ServiceTuple();
+            fillServiceTuple(serviceTuple, requiredAmount, listBillNumbersInCells, listStrMaxAmountCalculation);
             int checkResources = CheckResources.execute(serviceTuple);
-            switch (checkResources) {
-                case Setup.CHECK_PASSED:
-                    ToConsole.print(Setup.STR_OPERATION_APPROVED, GREEN);
-                    ToConsole.print(Setup.STR_PREPARED_ISSUANCE +
-                            serviceTuple.listStrMaxAmountCalculation.get(0).substring(3) + " = " + requiredAmount + "\n" +
-                            Setup.STR_ISSUANCE);
-                    return IssueBills.execute(serviceTuple);
-                case Setup.CHECK_FAIL_NO_SUCH_AMOUNT:
-                    ShowCashDispenserInfo.execute(listCellsWithBanknotes);
-                    return Setup.CHECK_FAIL_NO_SUCH_AMOUNT;
-                case Setup.CHECK_FAIL_NOT_ENOUGH_BILLS:
-                    return Setup.CHECK_FAIL_NOT_ENOUGH_BILLS;
-            }
+            return tryIssueBills(checkResources, serviceTuple);
         } else if (checkInputData == Setup.CHECK_FAIL_INCORRECT_INPUT_DATA) {
             return Setup.CHECK_FAIL_INCORRECT_INPUT_DATA;
         }
-        return Setup.CHECK_PASSED;
+        return Setup.SOMETHING_WRONG;
+    }
+
+    private int tryIssueBills(int checkResources, ServiceTuple serviceTuple) {
+        switch (checkResources) {
+            case Setup.CHECK_PASSED:
+                printApprovedOperation(serviceTuple, serviceTuple.requiredAmount);
+                return IssueBills.execute(serviceTuple);
+            case Setup.CHECK_FAIL_NO_SUCH_AMOUNT:
+                ShowCashDispenserInfo.execute(listCellsWithBanknotes);
+                return Setup.CHECK_FAIL_NO_SUCH_AMOUNT;
+            case Setup.CHECK_FAIL_NOT_ENOUGH_BILLS:
+                return Setup.CHECK_FAIL_NOT_ENOUGH_BILLS;
+        }
+        return Setup.SOMETHING_WRONG;
+    }
+
+    private void printApprovedOperation(ServiceTuple serviceTuple, int requiredAmount) {
+        ToConsole.print(Setup.STR_OPERATION_APPROVED, GREEN);
+        ToConsole.print(Setup.STR_PREPARED_ISSUANCE +
+                serviceTuple.listStrMaxAmountCalculation.get(0).substring(3) + " = " + requiredAmount + "\n" +
+                Setup.STR_ISSUANCE);
+    }
+
+    private void fillServiceTuple(ServiceTuple serviceTuple,
+                                  int requiredAmount,
+                                  List<Integer> listBillNumbersInCells,
+                                  List<String> listStrMaxAmountCalculation) {
+        serviceTuple.requiredAmount = requiredAmount;
+        serviceTuple.listIntBillNumbersInCells = listBillNumbersInCells;
+        serviceTuple.listCellsWithBanknotes = listCellsWithBanknotes;
+        serviceTuple.listStrMaxAmountCalculation = listStrMaxAmountCalculation;
     }
 }
