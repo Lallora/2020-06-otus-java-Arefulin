@@ -12,25 +12,18 @@ import java.util.List;
 import static ru.otus.atm.cash_vault.services.Setup.GREEN;
 
 public class ATM implements IATM {
-    private boolean executionControl = false;
     private final List<Cell> listCellsWithBanknotes = new ArrayList<>();
 
     public ATM() {
         CreateCashDispenser.execute(listCellsWithBanknotes);
     }
 
-    public ATM(boolean executionControl) {
-        this.executionControl = executionControl;
-        CreateCashDispenser.execute(listCellsWithBanknotes);
-    }
-
     public int getAmount(int requiredAmount) {
-        String maxAmountCalculation;
         int checkInputData = CheckInputData.execute(requiredAmount);
-        return tryGetAmount(requiredAmount, checkInputData);
+        return tryGetAmount(checkInputData, requiredAmount);
     }
 
-    private int tryGetAmount(int requiredAmount, int checkInputData) {
+    private int tryGetAmount(int checkInputData, int requiredAmount) {
         if (checkInputData == Setup.CHECK_PASSED) {
             List<Integer> listBillNumbersInCells = new ArrayList<>();
             List<String> listStrMaxAmountCalculation = new ArrayList<>();
@@ -54,8 +47,9 @@ public class ATM implements IATM {
                 return Setup.CHECK_FAIL_NO_SUCH_AMOUNT;
             case Setup.CHECK_FAIL_NOT_ENOUGH_BILLS:
                 return Setup.CHECK_FAIL_NOT_ENOUGH_BILLS;
+            default:
+                return Setup.SOMETHING_WRONG;
         }
-        return Setup.SOMETHING_WRONG;
     }
 
     private void printApprovedOperation(ServiceTuple serviceTuple, int requiredAmount) {
