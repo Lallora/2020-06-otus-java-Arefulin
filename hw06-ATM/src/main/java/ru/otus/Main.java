@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) {
         final boolean executionControl = true;
         int result;
-        ATM cd = new ATM(executionControl);
+        ATM cd = new ATM();
 
         List<Integer> listGetMoney = new ArrayList<>();
         listGetMoney.add(9800);
