@@ -1,9 +1,10 @@
+
 plugins {
     //support Idea IDE
-    id 'idea' apply true
+    id 'idea'
     id "io.spring.dependency-management" version "1.0.9.RELEASE"
     // Build uber-jar
-    id 'com.github.johnrengelman.shadow' version '5.2.0' apply false
+    id 'com.github.johnrengelman.shadow' version '6.0.0' apply false
 }
 
 idea {
@@ -25,14 +26,46 @@ allprojects {
 
     apply plugin: "io.spring.dependency-management"
     dependencyManagement {
-        apply plugin: "io.spring.dependency-management"
-        dependencyManagement {
-            dependencies {
-                dependency("com.google.guava:guava:${Versions.guava}")
-//                dependency("com.google.protobuf:protobuf-java-util:${Versions.protobuf}")
-//                dependency("org.junit.jupiter:junit-jupiter-api:${Versions.junit}")
-//                dependency("org.junit.jupiter:junit-jupiter-engine:${Versions.junit}")
+        dependencies {
+            imports {
+                mavenBom("org.springframework.boot:spring-boot-dependencies:2.3.1.RELEASE")
             }
+            dependency("com.google.guava:guava:${Versions.guava}")
+            dependency("org.openjdk.jmh:jmh-core:${Versions.jmh}")
+            dependency("org.openjdk.jmh:jmh-generator-annprocess:${Versions.jmh}")
+            dependency("org.openjdk.jol:jol-core:${Versions.jol}")
+            dependency("org.ow2.asm:asm-commons:${Versions.asm}")
+
         }
     }
+
+    configurations.all {
+        resolutionStrategy {
+            failOnVersionConflict()
+        }
+
+        resolutionStrategy {
+            force("javax.servlet:servlet-api:2.4")
+            force("commons-logging:commons-logging:1.1.1")
+            force("commons-lang:commons-lang:2.5")
+            force("org.codehaus.jackson:jackson-core-asl:1.8.8")
+            force("org.codehaus.jackson:jackson-mapper-asl:1.8.3")
+            force("org.codehaus.jettison:jettison:1.1")
+        }
+    }
+}
+
+//print versions from BOM
+task managedVersions {
+    doLast {
+        dependencyManagement.managedVersions.each {
+            println it
+        }
+    }
+}
+
+//gradle -q hello
+task hello {
+    println 'Hello world!'
+    println System.getenv('JAVA_HOME')
 }
