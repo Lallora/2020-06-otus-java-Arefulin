@@ -1,0 +1,53 @@
+plugins {
+    // Apply the java plugin to add support for Java
+    id 'java'
+    id "com.google.protobuf" version "0.8.12"
+    id 'com.github.johnrengelman.shadow'
+    id 'idea'
+}
+
+sourceCompatibility = JavaVersion.VERSION_14
+targetCompatibility = JavaVersion.VERSION_14
+
+dependencies {
+    implementation 'com.google.guava:guava'
+    implementation 'com.google.protobuf:protobuf-java-util'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'javax.json:javax.json-api'
+    implementation 'org.glassfish:javax.json'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+def protoSrcDir = "$projectDir/build/generated"
+
+idea {
+    module {
+        sourceDirs += file(protoSrcDir);
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.12.1'
+    }
+    generatedFilesBaseDir = protoSrcDir
+    generateProtoTasks {
+        ofSourceSet('main')
+    }
+}
+
+shadowJar {
+    archiveBaseName.set('HW08-serialization')
+    archiveVersion.set('0.1')
+    archiveClassifier.set('')
+    manifest {
+        attributes 'Main-Class': 'ru.otus.Main'
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.build.dependsOn tasks.shadowJar

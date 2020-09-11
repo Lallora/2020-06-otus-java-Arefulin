@@ -13,5 +13,6 @@
 * [HW 05](./hw05-AOP) - automatic logging (Aspect-oriented programming lesson)
 * [HW 06](./hw06-ATM) - ATM emulator (SOLID lesson)
 * [HW 07](./hw07-Patterns) - try to use some patterns (Patterns lesson)
+* [HW 08](./hw08-Serialization) - make your own JSON serialization (Serialization lesson)
 
 
