@@ -18,6 +18,7 @@
             <option value="$PROJECT_DIR$/hw05-AOP" />
             <option value="$PROJECT_DIR$/hw06-ATM" />
             <option value="$PROJECT_DIR$/hw07-Patterns" />
+            <option value="$PROJECT_DIR$/hw08-Serialization" />
           </set>
         </option>
       </GradleProjectSettings>
