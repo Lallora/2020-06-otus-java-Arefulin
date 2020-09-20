@@ -114,7 +114,6 @@ public class JdbcMapper<T> implements IJdbcMapper<T> {
         } catch (ExcDAO e) {
             e.printStackTrace();
         }
-        sessionManager.beginSession();
         try {
             Optional<T> findObject = sqlExecutor.executeSelect(
                     sessionManager.getCurrentSession().getConnection(),
