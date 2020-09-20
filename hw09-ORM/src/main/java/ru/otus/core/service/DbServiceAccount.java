@@ -2,30 +2,30 @@ package ru.otus.core.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.otus.core.models.User;
+import ru.otus.core.models.Account;
 import ru.otus.exceptions.ExcDbService;
-import ru.otus.jdbc.dao.IDaoUser;
+import ru.otus.jdbc.dao.IDaoAccount;
 
 import java.util.Optional;
 
-public class DbServiceUser implements IDBServiceUser {
+public class DbServiceAccount implements IDBServiceAccount {
     private static final Logger logger = LoggerFactory.getLogger(DbServiceUser.class);
 
-    private final IDaoUser daoUser;
+    private final IDaoAccount daoAccount;
 
-    public DbServiceUser(IDaoUser daoUser) {
-        this.daoUser = daoUser;
+    public DbServiceAccount(IDaoAccount daoAccount) {
+        this.daoAccount = daoAccount;
     }
 
     @Override
-    public long saveUser(User user) {
-        try (var sessionManager = daoUser.getSessionManager()) {
+    public long saveAccount(Account account) {
+        try (var sessionManager = daoAccount.getSessionManager()) {
             sessionManager.beginSession();
             try {
-                var userId = daoUser.insertUser(user);
+                var userId = daoAccount.insertAccount(account);
                 sessionManager.commitSession();
 
-                logger.info("created user id: " + userId + ", name: " + user.getName() + ", age: " + user.getAge());
+                logger.info("created user: {}", userId);
                 return userId;
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
@@ -36,14 +36,14 @@ public class DbServiceUser implements IDBServiceUser {
     }
 
     @Override
-    public Optional<User> getUser(long id) {
-        try (var sessionManager = daoUser.getSessionManager()) {
+    public Optional<Account> getAccount(long id) {
+        try (var sessionManager = daoAccount.getSessionManager()) {
             sessionManager.beginSession();
             try {
-                Optional<User> userOptional = daoUser.findById(id);
+                Optional<Account> accountOptional = daoAccount.findById(id);
 
-                logger.info("gotten user: {}", userOptional.orElse(null));
-                return userOptional;
+                logger.info("Account: {}", accountOptional.orElse(null));
+                return accountOptional;
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 sessionManager.rollbackSession();
