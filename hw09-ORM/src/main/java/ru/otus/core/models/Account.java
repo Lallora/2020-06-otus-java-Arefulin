@@ -2,22 +2,18 @@ package ru.otus.core.models;
 
 import ru.otus.annotations.Id;
 
-import java.math.BigDecimal;
-import java.util.Objects;
-
 public class Account {
     @Id
     private long no;
     private String type;
-    private BigDecimal rest;
+    private long rest;
 
     public Account() {
     }
-
-    public Account(long no, String type, int rest) {
+    public Account(long no, String type, long rest) {
         this.no = no;
         this.type = type;
-        this.rest = BigDecimal.valueOf(rest);
+        this.rest = rest;
     }
 
     public long getNo() {
@@ -36,23 +32,9 @@ public class Account {
         this.type = type;
     }
 
-    public BigDecimal getRest() {
-        return rest;
-    }
+    public long getRest() { return rest; }
 
-    public void setRest(BigDecimal rest) {
-        this.rest = rest;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Account account = (Account) o;
-        return rest.equals(account.rest) &&
-                no == account.no &&
-                Objects.equals(type, account.type);
-    }
+    public void setRest(long rest) { this.rest = rest; }
 
     @Override
     public String toString() {

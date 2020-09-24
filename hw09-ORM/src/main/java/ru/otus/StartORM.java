@@ -3,81 +3,59 @@ package ru.otus;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.otus.core.models.Account;
 import ru.otus.core.models.User;
-import ru.otus.core.service.DbServiceUser;
+import ru.otus.core.service.DbServiceAccountImpl;
+import ru.otus.core.service.DbServiceUserImpl;
 import ru.otus.h2.DataSourceH2;
-import ru.otus.jdbc.DbExecutor;
+import ru.otus.jdbc.DbExecutorImpl;
+import ru.otus.jdbc.dao.DaoAccountJDBC;
 import ru.otus.jdbc.dao.DaoUserJDBC;
-import ru.otus.jdbc.mapper.IJdbcMapper;
-import ru.otus.jdbc.mapper.JdbcMapper;
-import ru.otus.jdbc.sessionmanager.SessionManager;
+import ru.otus.jdbc.mapper.JdbcMapperImpl;
+import ru.otus.jdbc.sessionmanager.SessionManagerImpl;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 
 public class StartORM {
     private static final Logger logger = LoggerFactory.getLogger(StartORM.class);
+    private static BigDecimal bigDecimal;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 // Общая часть
         var dataSource = new DataSourceH2();
         flywayMigrations(dataSource);
+        SessionManagerImpl sessionManagerImpl = new SessionManagerImpl(dataSource);
 
-        var sessionManager = new SessionManager(dataSource);
-        sessionManager.beginSession();
-// Работа с пользователем
-        DbExecutor<User> dbExecutor = new DbExecutor<>();
-        var daoUser = new DaoUserJDBC(sessionManager, dbExecutor);
-
-// Создадим экземпляры класса User
-        User userMike = new User();
-        userMike.setName("Миша");
-        userMike.setAge(27);
-
-        User userAnn = new User();
-        userAnn.setName("Анна");
-        userAnn.setAge(22);
-
-        User userPeter = new User();
-        userPeter.setName("Петя");
-        userPeter.setAge(3);
-
-        User userFedor = new User();
-        userFedor.setName("Фёдор");
-        userFedor.setAge(51);
-
-// Сделаем записи в таблице user с помощью нашей ORM
-        IJdbcMapper<User> jdbcMapperUser = new JdbcMapper<>(User.class, sessionManager);
-        jdbcMapperUser.insert(userFedor); // 1
-        jdbcMapperUser.insert(userMike);  // 2 Mike
-        jdbcMapperUser.insert(userMike);  // 3 Mike
-        jdbcMapperUser.insert(userMike);  // 4 Mike
-        jdbcMapperUser.insert(userMike);  // 5 Mike
-        jdbcMapperUser.update(new User(3, "updated_Миша", 30));
-        jdbcMapperUser.insertOrUpdate(new User(4, "insertedOrUpdated_Миша_id4", 32));
-        jdbcMapperUser.insertOrUpdate(new User(26, "insertedOrUpdated_Миша_id26", 33));
-
-// Код дальше должен остаться, т.е. daoUser должен использоваться
-        var dbServiceUser = new DbServiceUser(daoUser);
-        var id2 = dbServiceUser.saveUser(userAnn);
-        var id3 = dbServiceUser.saveUser(userPeter);
-        var id4 = dbServiceUser.saveUser(new User(0, "Маша", 1));
-        Optional<User> user0 = dbServiceUser.getUser(1);
-        Optional<User> user1 = dbServiceUser.getUser(2);
-        Optional<User> user2 = dbServiceUser.getUser(3);
-        Optional<User> user3 = dbServiceUser.getUser(4);
-        Optional<User> user4 = dbServiceUser.getUser(5);
-        Optional<User> user5 = dbServiceUser.getUser(6);
-        Optional<User> user6 = dbServiceUser.getUser(id2);
-        Optional<User> user7 = dbServiceUser.getUser(id3);
-        Optional<User> user8 = dbServiceUser.getUser(id4);
-
-        user1.ifPresentOrElse(
-                crUser -> logger.info("created user, name:{}", crUser.getName()),
+// User
+        DbExecutorImpl<User> dbExecutorImpl = new DbExecutorImpl<>();
+        var jdbcMapperUser = JdbcMapperImpl.forType(User.class, sessionManagerImpl, dbExecutorImpl);
+        var userDao = new DaoUserJDBC(sessionManagerImpl, jdbcMapperUser);
+        var dbServiceUser = new DbServiceUserImpl(userDao);
+        var idUser = dbServiceUser.saveUser(new User(0, "dbServiceUser", 35));
+        Optional<User> user = dbServiceUser.getUser(idUser);
+        user.ifPresentOrElse(crUser -> logger.info("created user, name:{}", crUser.getName()),
                 () -> logger.info("user was not created")
         );
-    }
+// Account
+        DbExecutorImpl<Account> dbExecutorImpl2 = new DbExecutorImpl<>();
+    var jdbcMapperAccount = JdbcMapperImpl.forType(Account.class, sessionManagerImpl, dbExecutorImpl2);
+    var accountDao = new DaoAccountJDBC(sessionManagerImpl, jdbcMapperAccount);
+    var dbServiceAccount = new DbServiceAccountImpl(accountDao);
+    var idAccount = dbServiceAccount.saveAccount(new Account(0, "AccountType1", 10));
+    Optional<Account> account = dbServiceAccount.getAccount(idAccount);
+        account.ifPresentOrElse(new Consumer<Account>() {
+                                    @Override
+                                    public void accept(Account crAccount) {
+                                        logger.info("created account, type:{}", crAccount.getType());
+                                    }
+                                },
+            () -> logger.info("account was not created")
+            );
+}
 
     private static void flywayMigrations(DataSource dataSource) {
         logger.info("db migration started...");

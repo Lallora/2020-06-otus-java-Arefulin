@@ -1,11 +1,11 @@
 package ru.otus.jdbc.dao;
 
-import ru.otus.jdbc.sessionmanager.ISessionManager;
+import ru.otus.jdbc.sessionmanager.SessionManager;
 import ru.otus.core.models.User;
 
 import java.util.Optional;
 
-public interface IDaoUser {
+public interface DaoUser {
     Optional<User> findById(long id);
 
     long insertUser(User user);
@@ -14,5 +14,5 @@ public interface IDaoUser {
 
     void update(User user);
 
-    ISessionManager getSessionManager();
+    SessionManager getSessionManager();
 }
