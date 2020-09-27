@@ -4,7 +4,7 @@ import ru.otus.core.models.Account;
 
 import java.util.Optional;
 
-public interface DBServiceAccount {
+public interface DbServiceAccount {
 
     long saveAccount(Account account);
 

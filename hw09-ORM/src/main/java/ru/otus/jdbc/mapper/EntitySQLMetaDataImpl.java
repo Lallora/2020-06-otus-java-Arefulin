@@ -1,70 +1,52 @@
 package ru.otus.jdbc.mapper;
 
+import ru.otus.exceptions.DAOException;
+
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-public class EntitySQLMetaDataImpl implements EntitySQLMetaData {
-    private static final String SELECT_TEMPLATE = "SELECT * FROM %s %s;";
+public class EntitySQLMetaDataImpl<T> implements EntitySQLMetaData {
+
+    private static final String SELECT_ALL_TEMPLATE = "SELECT * FROM %s;";
+    private static final String SELECT_ID_TEMPLATE = "SELECT * FROM %s WHERE %s = ?;";
     private static final String INSERT_TEMPLATE = "INSERT INTO %s (%s) VALUES (%s);";
-    private static final String UPDATE_TEMPLATE = "UPDATE %s SET %s %s;";
+    private static final String UPDATE_TEMPLATE = "UPDATE %s SET %s WHERE %s = ?;";
+    private static final String COUNT_TEMPLATE = "SELECT COUNT(*) AS TOTAL_COUNT  FROM %s;";
+    private final EntityClassMetaData<T> entityClassMetaData;
 
-    private final String selectAllSql;
-    private final String selectByIdSql;
-    private final String insertSql;
-    private final String updateSql;
-
-    public EntitySQLMetaDataImpl(String selectAllSql, String selectByIdSql, String insertSql, String updateSql) {
-        this.selectAllSql = selectAllSql;
-        this.selectByIdSql = selectByIdSql;
-        this.insertSql = insertSql;
-        this.updateSql = updateSql;
-    }
-
-    public static EntitySQLMetaDataImpl createFromClass(EntityClassMetaDataImpl<?> classMetaData) {
-        var tableName = classMetaData.getName();
-        var fields = classMetaData.getFieldsWithoutId().stream().map(Field::getName).collect(Collectors.toList());
-        return create(tableName, classMetaData.getIdField().getName(), fields);
-    }
-
-    public static EntitySQLMetaDataImpl create(String tableName, String idField, List<String> fieldNames) {
-        var whereId = String.format("WHERE `%s`=?", idField);
-
-        var selectAll = String.format(SELECT_TEMPLATE, tableName, "");
-        var selectById = String.format(SELECT_TEMPLATE, tableName, whereId);
-        var insert = String.format(INSERT_TEMPLATE, tableName, String.join(",", fieldNames),
-                generateParameters(fieldNames.size()));
-        var update = String.format(UPDATE_TEMPLATE, tableName, generateFieldNamesAndParameters(fieldNames), whereId);
-
-        return new EntitySQLMetaDataImpl(selectAll, selectById, insert, update);
+    public EntitySQLMetaDataImpl(EntityClassMetaData<T> entityClassMetaData) {
+        this.entityClassMetaData = entityClassMetaData;
     }
 
     @Override
-    public String getSelectAllSql() {
-        return selectAllSql;
+    public String getInsertSql() throws DAOException {
+        String tableName = entityClassMetaData.getName();
+        String fieldsWithoutId = entityClassMetaData.getFieldsWithoutId().stream().map(Field::getName).collect(Collectors.joining(","));
+        String what = "?,".repeat(entityClassMetaData.getFieldsWithoutId().size());
+        return String.format(INSERT_TEMPLATE, tableName, fieldsWithoutId, what.substring(0, what.length() - 1));
     }
 
     @Override
-    public String getSelectByIdSql() throws RuntimeException {
-        return selectByIdSql;
+    public String getUpdateSql() throws Exception {
+        String tableName = entityClassMetaData.getName();
+        String fieldsWithoutId = entityClassMetaData.getFieldsWithoutId().stream()
+                .map(f -> f.getName() + " = ?")
+                .collect(Collectors.joining(","));
+        return String.format(UPDATE_TEMPLATE, tableName, fieldsWithoutId, entityClassMetaData.getIdField().getName());
     }
 
     @Override
-    public String getInsertSql() {
-        return insertSql;
+    public String getSelectByIdSql() throws DAOException {
+        return String.format(SELECT_ID_TEMPLATE, entityClassMetaData.getName(), entityClassMetaData.getIdField().getName());
     }
 
     @Override
-    public String getUpdateSql() throws RuntimeException {
-        return updateSql;
+    public String getSelectAllSql() throws DAOException {
+        return String.format(SELECT_ALL_TEMPLATE, entityClassMetaData.getName());
     }
 
-    private static String generateFieldNamesAndParameters(List<String> fields) {
-        return fields.stream().map(field -> String.format("`%s`=?", field)).collect(Collectors.joining(","));
-    }
-
-    private static String generateParameters(int amount) {
-        return IntStream.range(0, amount).mapToObj(i -> "?").collect(Collectors.joining(","));
+    @Override
+    public String getMaxNumberOfRecords() throws DAOException {
+        return String.format(COUNT_TEMPLATE, entityClassMetaData.getName());
     }
 }

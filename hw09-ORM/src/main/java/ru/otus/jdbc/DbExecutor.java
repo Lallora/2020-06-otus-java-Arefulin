@@ -8,10 +8,11 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public interface DbExecutor<T> {
+    long executeGetMaxNumberOfRecordsSQL(Connection connection, String sql) throws SQLException;
 
     long executeInsert(Connection connection, String sql, List<Object> params) throws SQLException;
 
-    Optional<T> executeSelect(Connection connection, String sql, long id, Function<ResultSet, T> rsHandler) throws SQLException;
-
     boolean executeUpdate(Connection connection, String sql, List<Object> params) throws SQLException;
+
+    Optional<T> executeSelect(Connection connection, String sql, long id, Function<ResultSet, T> rsHandler) throws SQLException;
 }

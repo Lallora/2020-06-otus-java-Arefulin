@@ -1,16 +1,16 @@
 package ru.otus.jdbc.mapper;
 
-import ru.otus.exceptions.ExcDAO;
+import ru.otus.exceptions.DAOException;
 
 import java.util.Optional;
 
 public interface JdbcMapper<T> {
 
-    Optional<T> findById(long id);
+    Optional<T> findById(long id) throws DAOException;
 
-    void insert(T objectData);
+    long insert(T objectData) throws DAOException;
 
-    void update(T objectData) throws ExcDAO;
+    boolean update(T objectData, long id) throws Exception;
 
-    void insertOrUpdate(T objectData);
+    long getMaxNumberOfTableRecords(T objectData) throws DAOException;
 }

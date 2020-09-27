@@ -1,51 +1,47 @@
 package ru.otus.jdbc.dao;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.otus.core.models.Account;
-import ru.otus.jdbc.mapper.JdbcMapperImpl;
+import ru.otus.jdbc.mapper.JdbcMapper;
 import ru.otus.jdbc.sessionmanager.SessionManager;
-import ru.otus.jdbc.sessionmanager.SessionManagerImpl;
 
 import java.util.Optional;
 
 public class DaoAccountJDBC implements DaoAccount {
 
-    private static final Logger logger = LoggerFactory.getLogger(DaoAccountJDBC.class);
+    private final SessionManager sessionManager;
 
-    private final SessionManagerImpl sessionManagerImpl;
-    private final JdbcMapperImpl<Account> jdbcMapperImpl;
+    private final JdbcMapper<Account> jdbcMapper;
 
-    public DaoAccountJDBC(SessionManagerImpl sessionManagerImpl, JdbcMapperImpl<Account> jdbcMapperImpl) {
-        this.sessionManagerImpl = sessionManagerImpl;
-        this.jdbcMapperImpl = jdbcMapperImpl;
+    public DaoAccountJDBC(SessionManager sessionManager, JdbcMapper<Account> jdbcMapper) {
+        this.sessionManager = sessionManager;
+        this.jdbcMapper = jdbcMapper;
     }
 
     @Override
     public Optional<Account> findById(long id) {
-        return jdbcMapperImpl.findById(id);
+        return jdbcMapper.findById(id);
     }
 
     @Override
     public long insertAccount(Account account) {
-        jdbcMapperImpl.insert(account);
-        return account.getNo();
+        long id = jdbcMapper.insert(account);
+        account.setNo(id);
+        return id;
     }
 
     @Override
-    public void insertOrUpdate(Account account) {
-        jdbcMapperImpl.insertOrUpdate(account);
-    }
-
-    @Override
-    public void update(Account account) {
-        jdbcMapperImpl.update(account);
+    public boolean update(Account account) throws Exception {
+        return jdbcMapper.update(account, account.getNo());
     }
 
     @Override
     public SessionManager getSessionManager() {
-        return sessionManagerImpl;
+        return sessionManager;
     }
 
+    @Override
+    public long getMaxNumberOfTableRecords(Account account) {
+        return jdbcMapper.getMaxNumberOfTableRecords(account);
+    }
 }

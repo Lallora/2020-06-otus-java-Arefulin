@@ -1,13 +1,17 @@
 package ru.otus.jdbc.mapper;
 
-import ru.otus.exceptions.ExcDAO;
+import ru.otus.exceptions.DAOException;
 
 public interface EntitySQLMetaData {
-    String getSelectAllSql();
 
-    String getSelectByIdSql() throws ExcDAO;
+    String getInsertSql() throws DAOException;
 
-    String getInsertSql();
+    String getUpdateSql() throws Exception;
 
-    String getUpdateSql() throws ExcDAO;
+    String getSelectByIdSql() throws DAOException;
+
+    String getSelectAllSql() throws DAOException;
+
+    String getMaxNumberOfRecords() throws DAOException;
+
 }

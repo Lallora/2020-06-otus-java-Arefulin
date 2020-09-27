@@ -1,159 +1,148 @@
 package ru.otus.jdbc.mapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.otus.exceptions.DAOException;
 import ru.otus.exceptions.ExcMapperException;
 import ru.otus.jdbc.DbExecutor;
 import ru.otus.jdbc.sessionmanager.SessionManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class JdbcMapperImpl<T> implements JdbcMapper<T> {
+
     private static final Logger logger = LoggerFactory.getLogger(JdbcMapperImpl.class);
 
     private final SessionManager sessionManager;
     private final DbExecutor<T> dbExecutor;
-    private final EntityClassMetaData<T> classMetaData;
-    private final EntitySQLMetaData sqlMetaData;
+    private EntityClassMetaData<T> classMetaData;
+    private EntitySQLMetaData sqlMetaData;
 
-    public JdbcMapperImpl(SessionManager sessionManager, DbExecutor<T> dbExecutor,
-                          EntityClassMetaData<T> classMetaData, EntitySQLMetaData sqlMetaData) {
-        this.sessionManager = sessionManager;
+
+    public JdbcMapperImpl(SessionManager sessionManager, DbExecutor<T> dbExecutor) {
         this.dbExecutor = dbExecutor;
-        this.classMetaData = classMetaData;
-        this.sqlMetaData = sqlMetaData;
+        this.sessionManager = sessionManager;
     }
 
     @Override
-    public Optional<T> findById(long id) {
+    public Optional<T> findById(long id) throws RuntimeException {
+        String strSelectSQL = null;
         try {
-            return dbExecutor.executeSelect(sessionManager.getCurrentSession().getConnection(),
-                    sqlMetaData.getSelectByIdSql(), id, resultSet -> {
+            strSelectSQL = sqlMetaData.getSelectByIdSql();
+        } catch (DAOException e) {
+            e.printStackTrace();
+        }
+        sessionManager.beginSession();
+        Optional<T> findObject = null;
+        try {
+            findObject = dbExecutor.executeSelect(getConnection(),
+                    strSelectSQL,
+                    id,
+                    resultSet -> {
                         try {
-                            return mapObject(resultSet);
+                            if (resultSet.next()) {
+                                return (T) createNewObject(resultSet, classMetaData);
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                         return null;
                     });
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return findObject;
+    }
+
+    @Override
+    public long insert(T objectData) throws RuntimeException {
+        try {
+            classMetaData = new EntityClassMetaDataImpl(objectData.getClass());
+            sqlMetaData = new EntitySQLMetaDataImpl(classMetaData);
+            String strInsertSQL = sqlMetaData.getInsertSql();
+            long result = dbExecutor.executeInsert(getConnection(),
+                    strInsertSQL, getParams(classMetaData, objectData));
+            sessionManager.commitSession();
+            return result;
         } catch (SQLException e) {
-            throw new ExcMapperException("Can not execute select for id " + id, e);
+            e.printStackTrace();
+            throw new ExcMapperException("Can not execute insert for " + objectData, e);
         }
     }
 
     @Override
-    public void insert(T objectData) {
+    public boolean update(T objectData, long id)  throws Exception{
+        classMetaData = new EntityClassMetaDataImpl(objectData.getClass());
+        sqlMetaData = new EntitySQLMetaDataImpl(classMetaData);
+        String strUpdateSQL = sqlMetaData.getUpdateSql();
+        boolean result = false;
         try {
-            var id = dbExecutor.executeInsert(sessionManager.getCurrentSession().getConnection(),
-                    sqlMetaData.getInsertSql(), extractFields(objectData, classMetaData.getFieldsWithoutId()));
-            injectId(objectData, id);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (SQLException ex) {
-            throw new ExcMapperException("Can not execute insert for " + objectData, ex);
-        }
-    }
-
-    @Override
-    public void update(T objectData) {
-        int id = 0;
-        try {
-            id = extractId(objectData);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        if (id == 0) {
-            throw new ExcMapperException("Can not update object " + objectData + " which is not stored in database");
-        }
-        try {
-            var params = extractFields(objectData, classMetaData.getFieldsWithoutId());
+            List<Object> params = getParams(classMetaData, objectData);
             params.add(id);
-            dbExecutor.executeInsert(sessionManager.getCurrentSession().getConnection(), sqlMetaData.getUpdateSql(),
-                    params);
+            if (dbExecutor.executeUpdate(getConnection(), strUpdateSQL, params)) {
+                result = true;
+            }
         } catch (SQLException e) {
             throw new ExcMapperException("Can not update " + objectData, e);
         }
+        return result;
     }
 
     @Override
-    public void insertOrUpdate(T objectData) {
+    public long getMaxNumberOfTableRecords(T objectData) throws RuntimeException {
         try {
-            if (extractId(objectData) == 0) {
-                insert(objectData);
-            } else {
-                update(objectData);
+            classMetaData = new EntityClassMetaDataImpl(objectData.getClass());
+            sqlMetaData = new EntitySQLMetaDataImpl(classMetaData);
+            String strGetMaxNumberOfRecordsSQL = sqlMetaData.getMaxNumberOfRecords();
+            long result = dbExecutor.executeGetMaxNumberOfRecordsSQL(getConnection(),
+                    strGetMaxNumberOfRecordsSQL);
+            sessionManager.commitSession();
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new ExcMapperException("Can not execute insert for " + objectData, e);
+        }
+    }
+
+    private List<Object> getParams(EntityClassMetaData<T> entityClassMetaData, T object) {
+        List<Object> listParams = new ArrayList<>();
+        for (Field field : entityClassMetaData.getFieldsWithoutId()) {
+            field.setAccessible(true);
+            try {
+                listParams.add(field.get(object));
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
-        } catch (IllegalAccessException e) {
+        }
+        return listParams;
+    }
+
+    private T createNewObject(ResultSet resultSet,
+                              EntityClassMetaData<T> entityClassMetaData) throws Exception {
+        Constructor<T> constructor = entityClassMetaData.getConstructor();
+        try {
+            T object = constructor.newInstance();
+            for (Field field : entityClassMetaData.getAllFields()) {
+                field.setAccessible(true);
+                field.set(object, resultSet.getObject(field.getName()));
+            }
+            return object;
+        } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
-    public static <T> JdbcMapperImpl<T> forType(Class<T> type, SessionManager sessionManager, DbExecutor<T> executor) {
-        EntityClassMetaDataImpl<T> classMetaData;
-        classMetaData = EntityClassMetaDataImpl.create(type);
-        var sqlMetaData = EntitySQLMetaDataImpl.createFromClass(classMetaData);
-        var jdbcMapperImpl = new JdbcMapperImpl<>(sessionManager, executor, classMetaData, sqlMetaData);
-
-        for (String s : Arrays.asList(
-                "Name: " + classMetaData.getName(),
-                "Select all: " + sqlMetaData.getSelectAllSql(),
-                "Select by id: " + sqlMetaData.getSelectByIdSql(),
-                "Insert: " + sqlMetaData.getInsertSql(),
-                "Update: " + sqlMetaData.getUpdateSql())) {
-            logger.debug(s);
-        }
-        return jdbcMapperImpl;
+    private Connection getConnection() {
+        return sessionManager.getCurrentSession().getConnection();
     }
-
-    private T mapObject(ResultSet resultSet) throws Exception {
-        try {
-            if (!resultSet.next()) {
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new ExcMapperException("Unexpected exception during mapping", e);
-        }
-
-        try {
-            var object = classMetaData.getConstructor().newInstance();
-
-            classMetaData.getAllFields().forEach(f -> {
-                try {
-                    var value = resultSet.getObject(f.getName());
-                    f.set(object, value);
-                } catch (SQLException e) {
-                    throw new ExcMapperException("Can not get column " + f.getName() + " value from ResultSet", e);
-                } catch (IllegalAccessException | IllegalArgumentException e) {
-                    throw new ExcMapperException("Can not set field " + f.getName() + " of type " + object.getClass(), e);
-                }
-            });
-            return object;
-        } catch (ReflectiveOperationException e) {
-            throw new ExcMapperException("Failed to instantiate object", e);
-        }
-    }
-
-    private void injectId(T object, long id) throws IllegalAccessException {
-        classMetaData.getIdField().set(object, id);
-    }
-
-    private int extractId(T object) throws IllegalAccessException {
-        return ((Number) classMetaData.getIdField().get(object)).intValue();
-    }
-
-    private List<Object> extractFields(T object, List<Field> fields) {
-        return fields.stream().map(f -> {
-            try {
-                return f.get(object);
-            } catch (IllegalAccessException e) {
-                throw new ExcMapperException("Cannot get value of " + f.getName() + " field", e);
-            }
-        }).collect(Collectors.toList());
-    }
-
 }
