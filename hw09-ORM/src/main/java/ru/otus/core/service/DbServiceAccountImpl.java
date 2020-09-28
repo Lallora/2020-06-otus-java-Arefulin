@@ -9,10 +9,7 @@ import ru.otus.jdbc.dao.DaoAccount;
 import java.util.Optional;
 
 public class DbServiceAccountImpl implements DbServiceAccount {
-
-    private static final Logger logger = LoggerFactory.getLogger(DbServiceAccountImpl.class);
-
-    private long accountId = 0;
+    private static final Logger logger = LoggerFactory.getLogger(DbServiceUserImpl.class);
 
     private final DaoAccount daoAccount;
 
@@ -21,39 +18,20 @@ public class DbServiceAccountImpl implements DbServiceAccount {
     }
 
     @Override
-    public long saveAccount(Account account) {
+    public void saveAccount(Account account) {
         try (var sessionManager = daoAccount.getSessionManager()) {
+            logger.info("sent account No: " + account.getNo() + ". name: " + account.getType() + ", age: " + account.getRest());
             sessionManager.beginSession();
-            long maxId = daoAccount.getMaxNumberOfTableRecords(account);
-            long curId = account.getNo();
             try {
-                switch ((curId == 0) ? 0 : (1 <= curId && curId <= maxId) ? 1 : (curId > maxId) ? 2 : 3) {
-                    case 0: {
-                        logger.info("need to insert account, name: " + account.getType() + ", age: " + account.getRest());
-                        accountId = daoAccount.insertAccount(account);
-                        sessionManager.commitSession();
-                        logger.info("INSERTED account no: " + accountId + ", name: " + account.getType() + ", age: " + account.getRest());
-                        return accountId;
-                    }
-                    case 1: {
-                        logger.info("need to update account no: " + curId + ", name: " + account.getType() + ", age: " + account.getRest());
-                        boolean result = daoAccount.update(account);
-                        if (result) accountId = 0;
-                        else accountId = -1;
-                        sessionManager.commitSession();
-                        logger.info("       UPDATED account no: " + curId + ", name: " + account.getType() + ", age: " + account.getRest());
-                        return curId;
-                    }
-                    case 2: {
-                        logger.info("need to insert or to update account no: " + curId + ", name: " + account.getType() + ", age: " + account.getRest());
-                        accountId = daoAccount.insertAccount(account);
-                        sessionManager.commitSession();
-                        logger.info("        INSERTED_OR_UPDATED account no: " + accountId + ", name: " + account.getType() + ", age: " + account.getRest());
-                        return accountId;
-                    }
-                    default:
-                        throw new IllegalStateException("Unexpected value: " + account.getNo());
+                Account testAccount = daoAccount.findById(account.getNo()).orElse(null);
+                if (testAccount != null) {
+                    daoAccount.update(account);
+                    logger.info("updated account No: " + account.getNo() + ". name: " + account.getType() + ", age: " + account.getRest());
+                } else {
+                    daoAccount.insertAccount(account);
+                    logger.info("got account No: " + account.getNo() + ". name: " + account.getType() + ", age: " + account.getRest());
                 }
+                sessionManager.commitSession();
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 sessionManager.rollbackSession();

@@ -2,10 +2,10 @@ package ru.otus.jdbc.mapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.otus.exceptions.DAOException;
 import ru.otus.exceptions.ExcMapperException;
 import ru.otus.jdbc.DbExecutor;
 import ru.otus.jdbc.sessionmanager.SessionManager;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -22,13 +22,18 @@ public class JdbcMapperImpl<T> implements JdbcMapper<T> {
 
     private final SessionManager sessionManager;
     private final DbExecutor<T> dbExecutor;
-    private EntityClassMetaData<T> classMetaData;
-    private EntitySQLMetaData sqlMetaData;
+    private final EntityClassMetaData<T> classMetaData;
+    private final EntitySQLMetaData sqlMetaData;
 
 
-    public JdbcMapperImpl(SessionManager sessionManager, DbExecutor<T> dbExecutor) {
+    public JdbcMapperImpl(SessionManager sessionManager,
+                          DbExecutor<T> dbExecutor,
+                          EntityClassMetaData<T> classMetaData,
+                          EntitySQLMetaData sqlMetaData) {
         this.dbExecutor = dbExecutor;
         this.sessionManager = sessionManager;
+        this.classMetaData = classMetaData;
+        this.sqlMetaData = sqlMetaData;
     }
 
     @Override
@@ -36,7 +41,7 @@ public class JdbcMapperImpl<T> implements JdbcMapper<T> {
         String strSelectSQL = null;
         try {
             strSelectSQL = sqlMetaData.getSelectByIdSql();
-        } catch (DAOException e) {
+        } catch (RuntimeException e) {
             e.printStackTrace();
         }
         sessionManager.beginSession();
@@ -64,13 +69,11 @@ public class JdbcMapperImpl<T> implements JdbcMapper<T> {
     @Override
     public long insert(T objectData) throws RuntimeException {
         try {
-            classMetaData = new EntityClassMetaDataImpl(objectData.getClass());
-            sqlMetaData = new EntitySQLMetaDataImpl(classMetaData);
             String strInsertSQL = sqlMetaData.getInsertSql();
-            long result = dbExecutor.executeInsert(getConnection(),
+            long id = dbExecutor.executeInsert(getConnection(),
                     strInsertSQL, getParams(classMetaData, objectData));
             sessionManager.commitSession();
-            return result;
+            return id;
         } catch (SQLException e) {
             e.printStackTrace();
             throw new ExcMapperException("Can not execute insert for " + objectData, e);
@@ -78,37 +81,23 @@ public class JdbcMapperImpl<T> implements JdbcMapper<T> {
     }
 
     @Override
-    public boolean update(T objectData, long id)  throws Exception{
-        classMetaData = new EntityClassMetaDataImpl(objectData.getClass());
-        sqlMetaData = new EntitySQLMetaDataImpl(classMetaData);
+    public void update(T objectData) throws RuntimeException {
         String strUpdateSQL = sqlMetaData.getUpdateSql();
-        boolean result = false;
         try {
             List<Object> params = getParams(classMetaData, objectData);
-            params.add(id);
-            if (dbExecutor.executeUpdate(getConnection(), strUpdateSQL, params)) {
-                result = true;
-            }
+            params.add(classMetaData.getIdField().get(objectData));
+            dbExecutor.executeUpdate(getConnection(), strUpdateSQL, params);
+            sessionManager.commitSession();
         } catch (SQLException e) {
             throw new ExcMapperException("Can not update " + objectData, e);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
-        return result;
     }
 
     @Override
-    public long getMaxNumberOfTableRecords(T objectData) throws RuntimeException {
-        try {
-            classMetaData = new EntityClassMetaDataImpl(objectData.getClass());
-            sqlMetaData = new EntitySQLMetaDataImpl(classMetaData);
-            String strGetMaxNumberOfRecordsSQL = sqlMetaData.getMaxNumberOfRecords();
-            long result = dbExecutor.executeGetMaxNumberOfRecordsSQL(getConnection(),
-                    strGetMaxNumberOfRecordsSQL);
-            sessionManager.commitSession();
-            return result;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new ExcMapperException("Can not execute insert for " + objectData, e);
-        }
+    public void insertOrUpdate(T objectData) {
+
     }
 
     private List<Object> getParams(EntityClassMetaData<T> entityClassMetaData, T object) {

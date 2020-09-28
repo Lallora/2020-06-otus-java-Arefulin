@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface DbServiceAccount {
 
-    long saveAccount(Account account);
+    void saveAccount(Account account);
 
     Optional<Account> getAccount(long id);
 }

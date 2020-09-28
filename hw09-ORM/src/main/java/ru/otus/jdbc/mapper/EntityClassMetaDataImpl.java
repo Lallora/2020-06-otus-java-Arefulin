@@ -1,7 +1,6 @@
 package ru.otus.jdbc.mapper;
 
 import ru.otus.annotations.Id;
-import ru.otus.exceptions.DAOException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -18,21 +17,21 @@ public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> {
     }
 
     @Override
-    public String getName() throws DAOException {
+    public String getName() throws RuntimeException {
         return clazz.getSimpleName();
     }
 
     @Override
-    public Constructor<T> getConstructor() throws DAOException {
+    public Constructor<T> getConstructor() throws RuntimeException {
         try {
             return clazz.getConstructor();
         } catch (NoSuchMethodException e) {
-            throw new DAOException("No constructor in the class");
+            throw new RuntimeException("No constructor in the class");
         }
     }
 
     @Override
-    public Field getIdField() throws DAOException {
+    public Field getIdField() throws RuntimeException {
         List<Field> list;
         list = Arrays.stream(clazz.getDeclaredFields())
                 .filter(f -> f.isAnnotationPresent(Id.class))
@@ -43,19 +42,19 @@ public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> {
         if (list.size() > 0) {
             return list.get(0);
         } else {
-            throw new DAOException("No field with annotation @Id in the class");
+            throw new RuntimeException("No field with annotation @Id in the class");
         }
     }
 
     @Override
-    public List<Field> getFieldsWithoutId() throws DAOException {
+    public List<Field> getFieldsWithoutId() throws RuntimeException {
         return Arrays.stream(clazz.getDeclaredFields())
                 .filter(f -> !f.isAnnotationPresent(Id.class))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Field> getAllFields() throws DAOException {
+    public List<Field> getAllFields() throws RuntimeException {
         return Arrays.stream(clazz.getDeclaredFields())
                 .collect(Collectors.toList());
     }

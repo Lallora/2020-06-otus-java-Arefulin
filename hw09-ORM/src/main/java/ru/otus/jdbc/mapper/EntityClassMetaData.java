@@ -1,20 +1,17 @@
 package ru.otus.jdbc.mapper;
 
-import ru.otus.exceptions.DAOException;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.List;
 
 public interface EntityClassMetaData<T> {
+    String getName();
 
-    String getName() throws DAOException;
+    Constructor<T> getConstructor();
 
-    Constructor<T> getConstructor() throws DAOException;
+    Field getIdField();
 
-    Field getIdField() throws DAOException;
+    List<Field> getFieldsWithoutId();
 
-    List<Field> getFieldsWithoutId() throws DAOException;
-
-    List<Field> getAllFields() throws DAOException;
+    List<Field> getAllFields();
 }

@@ -9,7 +9,6 @@ import java.util.Optional;
 public class DaoUserJDBC implements DaoUser {
 
     private final SessionManager sessionManager;
-
     private final JdbcMapper<User> jdbcMapper;
 
     public DaoUserJDBC(SessionManager sessionManager, JdbcMapper<User> jdbcMapper) {
@@ -23,15 +22,23 @@ public class DaoUserJDBC implements DaoUser {
     }
 
     @Override
-    public long insertUser(User user) {
+    public void insertUser(User user) {
         long id = jdbcMapper.insert(user);
-        user.setId(id);
-        return id;
+        if (id == user.getId()) {
+            update(user);
+        } else {
+            user.setId(id);
+        }
     }
 
     @Override
-    public boolean update(User user) throws Exception {
-        return jdbcMapper.update(user, user.getId());
+    public void update(User user) {
+        jdbcMapper.update(user);
+    }
+
+    @Override
+    public void insertOrUpdate(User user) {
+        jdbcMapper.insertOrUpdate(user);
     }
 
     @Override
@@ -39,8 +46,4 @@ public class DaoUserJDBC implements DaoUser {
         return sessionManager;
     }
 
-    @Override
-    public long getMaxNumberOfTableRecords(User user) {
-        return jdbcMapper.getMaxNumberOfTableRecords(user);
-    }
 }

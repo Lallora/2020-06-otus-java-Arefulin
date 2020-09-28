@@ -1,19 +1,18 @@
 package ru.otus.jdbc.dao;
 
-import ru.otus.core.models.Account;
 import ru.otus.jdbc.sessionmanager.SessionManager;
+import ru.otus.core.models.Account;
 
 import java.util.Optional;
 
 public interface DaoAccount {
-
     Optional<Account> findById(long id);
 
-    long insertAccount(Account account);
+    void insertAccount(Account account);
 
-    boolean update(Account account) throws Exception;
+    void insertOrUpdate(Account account);
 
-    long getMaxNumberOfTableRecords(Account account);
+    void update(Account account);
 
     SessionManager getSessionManager();
 }
