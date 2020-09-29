@@ -19,13 +19,11 @@ import ru.otus.jdbc.sessionmanager.SessionManager;
 import ru.otus.jdbc.sessionmanager.SessionManagerImpl;
 
 import javax.sql.DataSource;
-import java.math.BigDecimal;
 import java.util.Optional;
 
 
 public class StartORM {
     private static final Logger logger = LoggerFactory.getLogger(StartORM.class);
-    private static BigDecimal bigDecimal;
 
     public static void main(String[] args) {
 // Общая часть
@@ -35,9 +33,9 @@ public class StartORM {
 
 // Users
         DbExecutor<User> dbExecutorUser = new DbExecutorImpl<>();
-        var classMetaData = new EntityClassMetaDataImpl(User.class);
-        var sqlMetaData = new EntitySQLMetaDataImpl(classMetaData);
-        var jdbcMapperUser = new JdbcMapperImpl(sessionManager, dbExecutorUser, classMetaData, sqlMetaData);
+        var classMetaDataUser = new EntityClassMetaDataImpl(User.class);
+        var sqlMetaDataUser = new EntitySQLMetaDataImpl(classMetaDataUser);
+        var jdbcMapperUser = new JdbcMapperImpl(sessionManager, dbExecutorUser, classMetaDataUser, sqlMetaDataUser);
         var userDao = new DaoUserJDBC(sessionManager, jdbcMapperUser);
         var dbServiceUser = new DbServiceUserImpl(userDao);
 // Insert
@@ -64,9 +62,10 @@ public class StartORM {
         dbServiceUser.getUser(1);
 // Accounts
         DbExecutor<Account> dbExecutorAccount = new DbExecutorImpl<>();
-        var classAccountMetaData = new EntityClassMetaDataImpl(Account.class);
-        var sqlAccountMetaData = new EntitySQLMetaDataImpl(classAccountMetaData);
-        var jdbcMapperAccount = new JdbcMapperImpl(sessionManager, dbExecutorAccount, classAccountMetaData, sqlAccountMetaData);
+        var classAccountMetaDataAccount = new EntityClassMetaDataImpl(Account.class);
+        var sqlAccountMetaDataAccount = new EntitySQLMetaDataImpl(classAccountMetaDataAccount);
+        var jdbcMapperAccount = new JdbcMapperImpl(sessionManager, dbExecutorAccount, classAccountMetaDataAccount,
+                sqlAccountMetaDataAccount);
         var accountDao = new DaoAccountJDBC(sessionManager, jdbcMapperAccount);
         var dbServiceAccount = new DbServiceAccountImpl(accountDao);
         // Insert
