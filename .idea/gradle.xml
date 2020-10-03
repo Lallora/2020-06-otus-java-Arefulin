@@ -19,6 +19,7 @@
             <option value="$PROJECT_DIR$/hw06-ATM" />
             <option value="$PROJECT_DIR$/hw07-Patterns" />
             <option value="$PROJECT_DIR$/hw08-Serialization" />
+            <option value="$PROJECT_DIR$/hw09-ORM" />
           </set>
         </option>
       </GradleProjectSettings>
