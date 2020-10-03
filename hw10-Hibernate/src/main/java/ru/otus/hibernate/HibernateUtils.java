@@ -9,22 +9,6 @@ import org.hibernate.cfg.Configuration;
 
 public final class HibernateUtils {
 
-//            private static SessionFactory curSessionFactory;
-//            static{
-//                try{
-//                    Configuration configuration = new Configuration();
-//                    configuration.configure();
-//
-//                    curSessionFactory = configuration.buildSessionFactory();
-//                } catch (Throwable ex) {
-//                    throw new ExceptionInInitializerError(ex);
-//                }
-//            }
-//
-//            public static Session getSession() throws HibernateException {
-//                return curSessionFactory.openSession();
-//            }
-
     private HibernateUtils() {
     }
 
