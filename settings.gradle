@@ -8,3 +8,5 @@ include 'hw06-ATM'
 include 'hw07-Patterns'
 include 'hw08-Serialization'
 include 'hw09-ORM'
+include 'hw10-Hibernate'
+

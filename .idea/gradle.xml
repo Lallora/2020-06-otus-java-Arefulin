@@ -20,6 +20,7 @@
             <option value="$PROJECT_DIR$/hw07-Patterns" />
             <option value="$PROJECT_DIR$/hw08-Serialization" />
             <option value="$PROJECT_DIR$/hw09-ORM" />
+            <option value="$PROJECT_DIR$/hw10-Hibernate" />
           </set>
         </option>
       </GradleProjectSettings>
