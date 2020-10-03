@@ -21,6 +21,7 @@
             <option value="$PROJECT_DIR$/hw08-Serialization" />
             <option value="$PROJECT_DIR$/hw09-ORM" />
             <option value="$PROJECT_DIR$/hw10-Hibernate" />
+            <option value="$PROJECT_DIR$/hw11-Cache" />
           </set>
         </option>
       </GradleProjectSettings>
