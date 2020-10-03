@@ -1,7 +1,5 @@
 package ru.otus.core.model;
 
-import javax.persistence.*;
-
 @Entity
 @Table(name = "phones")
 public class Phone {
