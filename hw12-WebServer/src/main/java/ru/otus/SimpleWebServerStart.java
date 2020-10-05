@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.security.LoginService;
-
 import org.hibernate.SessionFactory;
 import ru.otus.core.dao.UserDao;
 import ru.otus.core.dao.UserDaoImpl;
