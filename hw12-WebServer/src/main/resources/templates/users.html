@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Пользователи</title>
+    <meta charset="UTF-8">
+    <style>
+        .create_user {margin-bottom: 20px; max-width: 200px;}
+        .create_user form {display: flex; flex-direction: column; justify-content: flex-start;}
+        .list_users {border: 1px solid darkgrey}
+        .send_button {margin-top: 20px;}
+    </style>
+</head>
+<body>
+<div class="create_user">
+    <h4>Создать нового пользователя</h4>
+    <form action="/users" method="post">
+        <label for="name">Имя пользователя</label>
+        <input type="text" id="name" name="name" required>
+        <label for="login">Логин</label>
+        <input type="text" id="login" name="login" required>
+        <label for="password">Пароль</label>
+        <input type="text" id="password" name="password" required>
+        <label for="phone">Телефон</label>
+        <input type="text" id="phone" name="phone" required>
+        <label for="address">Адрес</label>
+        <input type="text" id="address" name="address" required>
+        <button class="send_button" type="submit">Создать</button>
+    </form>
+</div>
+<div class="list_users">
+    <h4>Список пользователей</h4>
+    <table style="width: 400px">
+        <thead>
+        <tr>
+            <td>Id</td>
+            <td>Имя</td>
+            <td>Логин</td>
+            <td>Пароль</td>
+            <td>Телефон</td>
+            <td>Адрес</td>
+        </tr>
+        </thead>
+        <tbody id="users_list">
+        <#list users as user>
+        <tr>
+            <td>${user.id}</td>
+            <td>${user.name}</td>
+            <td>${user.login}</td>
+            <td>${user.password}</td>
+            <td>${user.phone}</td>
+            <td>${user.address}</td>
+        </tr>
+        </#list>
+        </tbody>
+    </table>
+
+    <script>
+        const f = document.forms[0];
+        f.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const inp = f.querySelectorAll('input');
+            const data = {
+                name: '',
+                login: '',
+                password: '',
+                phone: '',
+                address: ''
+            };
+            let element;
+            for(let i = 0; i < inp.length; i++) {
+                element = inp[i];
+                data[element.name] = element.value;
+            }
+            let response = await window.fetch(f.action,  {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify(data)
+            });
+            if(response.status === 200) {
+                let data = await response.json();
+                updateUsers(data);
+                f.reset();
+            }
+        });
+
+        function updateUsers(users) {
+            const usersList = document.getElementById("users_list");
+            usersList.innerText = "";
+            console.log(users);
+            const fragment = new DocumentFragment();
+            let tr = null;
+            users.forEach((user) => {
+                tr = document.createElement("tr");
+                for(let fieldName in user) {
+                    let td = document.createElement("td");
+                    td.textContent = user[fieldName];
+                    tr.insertBefore(td, null);
+                }
+                fragment.appendChild(tr);
+            });
+            usersList.appendChild(fragment);
+        }
+    </script>
+</div>
+</body>
+</html>
