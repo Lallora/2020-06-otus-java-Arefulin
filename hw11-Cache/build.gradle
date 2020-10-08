@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow'
+}
+
+sourceCompatibility = JavaVersion.VERSION_14
+targetCompatibility = JavaVersion.VERSION_14
+
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+    // This dependency is used by the application.
+    implementation("com.h2database:h2")
+    implementation("org.hibernate:hibernate-core")
+    implementation('ch.qos.logback:logback-classic')
+    implementation('org.slf4j:slf4j-api')
+    implementation('org.flywaydb:flyway-core')
+    testImplementation('org.junit.jupiter:junit-jupiter-api')
+    testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine')
+}
+
+compileJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+    options.with {
+        encoding = 'UTF-8'
+    }
+}

@@ -16,5 +16,6 @@
 * [HW 08](./hw08-Serialization) - make your own JSON serialization (Serialization lesson)
 * [HW 09](./hw09-ORM) - make your own ORM (JDBC lesson)
 * [HW 10](./hw10-Hibernate) - remake your hw10 to Hibernate (Hibernate lesson)
+* [HW 11](./hw11-Cache) - make your Cache (Cache lesson)
 
 
