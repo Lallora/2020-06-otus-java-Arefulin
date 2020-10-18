@@ -22,6 +22,8 @@
             <option value="$PROJECT_DIR$/hw09-ORM" />
             <option value="$PROJECT_DIR$/hw10-Hibernate" />
             <option value="$PROJECT_DIR$/hw11-Cache" />
+            <option value="$PROJECT_DIR$/hw12-WebServer" />
+            <option value="$PROJECT_DIR$/hw13-DI" />
           </set>
         </option>
       </GradleProjectSettings>

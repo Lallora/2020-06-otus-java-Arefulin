@@ -17,5 +17,6 @@
 * [HW 09](./hw09-ORM) - make your own ORM (JDBC lesson)
 * [HW 10](./hw10-Hibernate) - remake your hw10 to Hibernate (Hibernate lesson)
 * [HW 11](./hw11-Cache) - make your Cache (Cache lesson)
-
+* [HW 12](./hw12-WebServer) - make your web server (WebServer lesson)
+* [HW 13](./hw13-DI) - make your game (DI lesson)
 
