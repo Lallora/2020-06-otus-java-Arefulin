@@ -24,6 +24,7 @@
             <option value="$PROJECT_DIR$/hw11-Cache" />
             <option value="$PROJECT_DIR$/hw12-WebServer" />
             <option value="$PROJECT_DIR$/hw13-DI" />
+            <option value="$PROJECT_DIR$/hw14-warMvc" />
           </set>
         </option>
       </GradleProjectSettings>
