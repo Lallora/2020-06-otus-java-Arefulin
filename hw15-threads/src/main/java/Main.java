@@ -5,9 +5,10 @@ public class Main {
 
     final private static Logger logger = LoggerFactory.getLogger(Main.class);
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
+        Runnable r = new KeyReader();
         ThreadHandler threadHandler = new ThreadHandler();
-        new Thread(() -> threadHandler.showNextNumber("Thread-1")).start();
-        new Thread(() -> threadHandler.showNextNumber("Thread-2")).start();
+        new Thread(() -> threadHandler.showNextNumber(r,  "Thread-1")).start();
+        new Thread(() -> threadHandler.showNextNumber(r,  "Thread-2")).start();
     }
 }
