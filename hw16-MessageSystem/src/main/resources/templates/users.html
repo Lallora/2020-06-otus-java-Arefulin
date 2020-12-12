@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Панель управления пользователями</title>
+
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/static/css/bootstrap.min.css}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link th:href="@{/static/css/users.css}" rel="stylesheet">
+
+    <script type="text/javascript" th:src="@{/static/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/jquery.serializejson.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/bootstrap.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/sockjs.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/stomp.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/client.js}"></script>
+</head>
+
+<body>
+<div class="container">
+    <div>
+        <img src="../static/image/contact-new.png" id="contactNewPng" alt="" title="" />
+    </div>
+    <h3>Новый пользователь</h3>
+    <div class="card" style="width: 20rem;">
+        <form id="add-form" onsubmit="submitForm(this,event);">
+            <input name="name" type="text" id="name" class="form-control" placeholder="Имя" required autofocus>
+            <input name="age" type="number" id="age" class="form-control" placeholder="Возраст" required>
+            <input name="address" type="text" id="address" class="form-control" placeholder="Адрес" required>
+            <div class="input-group">
+                <input name="phones[]" type="tel" id="phone" class="form-control" placeholder="Телефон" required>
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" onclick="addPhone()">+</button>
+                </div>
+            </div>
+            <button id="submit-user" class="btn btn-lg btn-success btn-block" type="submit">Добавить</button>
+        </form>
+    </div>
+        <h3>Список пользователей</h3>
+    <table class="table table-light table-striped">
+        <thead class="table-success">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Имя</th>
+            <th scope="col">Возраст</th>
+            <th scope="col">Адрес</th>
+            <th scope="col">Телефон</th>
+        </tr>
+        </thead>
+        <tbody id="userList">
+        </tbody>
+    </table>
+    <h3>Поиск пользователей</h3>
+    <div class="card" style="width: 18rem;">
+        <form id="find-user" onsubmit="findUser(this, event);">
+            <input name="userId" type="number" id="userId" class="form-control" placeholder="ID" required>
+            <button class="btn btn-lg btn-success btn-block" type="submit">Найти по ID</button>
+        </form>
+        <br>
+        <button class="btn btn-lg btn-success btn-block" type="submit" onclick="findUser(null)">Случайный пользователь
+        </button>
+        <br>
+        <div id="findResult"><p></p>
+            <p></p>
+            <p></p>
+            <p></p></div>
+    </div>
+</div> <!-- /container -->
+<script th:inline="javascript">
+    $('#findResult').hide();
+
+    function addPhone() {
+        var phoneClone = $('#phone').clone();
+        phoneClone.val('');
+        $('#submit-user').before(phoneClone);
+    }
+
+    function submitForm(form, event) {
+        event.preventDefault();
+        let formJson = JSON.stringify($(form).serializeJSON());
+        client.send('/app/add', {}, formJson);
+    }
+
+    function findUser(form, event) {
+        let id;
+        if (form) {
+            event.preventDefault();
+            id = $(form.userId).val();
+        } else {
+            id = 'random';
+        }
+        client.send(`/app/get.${id}`);
+    }
+</script>
+</body>
+</html>
