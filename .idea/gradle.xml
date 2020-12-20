@@ -26,6 +26,8 @@
             <option value="$PROJECT_DIR$/hw13-DI" />
             <option value="$PROJECT_DIR$/hw14-warMvc" />
             <option value="$PROJECT_DIR$/hw15-threads" />
+            <option value="$PROJECT_DIR$/hw16-MessageSystem" />
+            <option value="$PROJECT_DIR$/messagesystem" />
           </set>
         </option>
       </GradleProjectSettings>

@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+}
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+group 'ru.otus'
+
+sourceCompatibility = JavaVersion.VERSION_14
+targetCompatibility = JavaVersion.VERSION_14
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'ch.qos.logback:logback-classic'
+}
+
+test {
+    useJUnitPlatform()
+}

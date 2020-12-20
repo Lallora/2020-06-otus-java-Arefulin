@@ -21,5 +21,6 @@
 * [HW 13](./hw13-DI) - make your game (DI lesson)
 * [HW 14](./hw14-warMvc) - make your web server (Spring MVC lesson)
 * [HW 15](./hw15-threads) - make a minimal application with threads (Threads lesson)
+* [HW 16](./hw16-MessageSystem) - Message system (Message system lesson)
 
 

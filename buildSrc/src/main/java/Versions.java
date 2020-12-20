@@ -9,8 +9,9 @@ public interface Versions {
     String testcontainers = "1.13.0";
     String postgresql = "42.2.5";
 
-    String lombok = "1.18.12";
+    String lombok = "1.18.16";
     String gson = "2.8.6";
+
 
     String mongodb = "4.1.0";
     String mongodbReactive = "4.1.0";
@@ -21,4 +22,17 @@ public interface Versions {
     String jetty = "9.4.31.v20200723";
     String freemarker = "2.3.30";
     String reflections = "0.9.12";
+
+    String sockjs = "1.1.2";
+    String stomp = "2.3.3-1";
+    String bootstrap = "4.4.1-1";
+    String netty = "4.1.53.Final";
+
+    String junit = "5.6.2";
+    String mockito = "3.3.3";
+    String gfJson = "1.1.4";
+    String h2 = "1.4.200";
+    String logback = "1.2.3";
+    String hibernate = "5.4.17.Final";
 }
+
