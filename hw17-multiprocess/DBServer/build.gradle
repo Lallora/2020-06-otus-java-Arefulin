@@ -1,0 +1,55 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.3.1.RELEASE'
+    id 'jacoco'
+    id 'com.github.johnrengelman.shadow'
+}
+
+
+sourceCompatibility = JavaVersion.VERSION_14
+targetCompatibility = JavaVersion.VERSION_14
+
+dependencies {
+    implementation project(':hw17-multiprocess:MessageClient')
+    implementation project(':hw17-multiprocess:MessageServer')
+    implementation 'com.h2database:h2'
+    implementation 'javax.persistence:javax.persistence-api'
+
+    implementation 'org.hibernate:hibernate-core'
+
+    implementation 'org.springframework:spring-context'
+    implementation 'javax.annotation:javax.annotation-api'
+
+    implementation 'com.google.code.gson:gson'
+
+    implementation 'ch.qos.logback:logback-classic'
+
+    testImplementation 'org.assertj:assertj-core'
+    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
+}
+
+shadowJar {
+    archiveBaseName.set('hw17-db-server')
+    archiveVersion.set('0.1')
+    archiveClassifier.set('')
+    manifest {
+        attributes 'Main-Class': 'hw17.DBServer'
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+check.dependsOn jacocoTestReport

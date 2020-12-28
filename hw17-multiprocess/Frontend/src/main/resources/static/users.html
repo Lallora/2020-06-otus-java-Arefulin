@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>User page</title>
+    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/main.css" rel="stylesheet">
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script src="/app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>
+</head>
+
+<body>
+
+<div id="main-content" class="container">
+<button id="connect" class="btn btn-default" type="submit">Подключиться</button>
+<button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Отключиться</button>
+
+<div id="users-actions" class="container">
+<p><h4>Добавить пользователя</h4>
+    <label>
+    <input type="text" id="name" name = "name" size=40  placeholder="Введите имя пользователя"><br>
+    </label>
+    <br/>
+    <label>
+    <input type="text" id="password" name = "password" size=40 placeholder="Введите пароль пользователя"><br>
+    </label>
+    <br>
+    <button id="send" class="btn btn-default" type="submit" >Сохранить</button>
+</p>
+
+<h4>Список пользователей</h4>
+
+<div class="container">
+    <table id="usersTable">
+        <thead>
+            <tr>
+                <th data-field="id">Id</th>
+                <th data-field="name">Name</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+</div>
+</div>
+
+</body>
+</html>
+

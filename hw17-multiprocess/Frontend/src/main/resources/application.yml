@@ -1,0 +1,10 @@
+server:
+  port: 8080
+
+logging:
+    level:
+        root: ERROR
+        hw17: DEBUG
+        ru: INFO
+        org.springframework.web: DEBUG
+        org.hibernate: ERROR

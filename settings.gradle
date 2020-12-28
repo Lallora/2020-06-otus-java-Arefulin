@@ -16,5 +16,8 @@ include 'hw14-warMvc'
 include 'hw15-threads'
 include 'hw16-MessageSystem'
 include 'messagesystem'
-
-
+include 'hw17-multiprocess:MessageSystem'
+include 'hw17-multiprocess:MessageServer'
+include 'hw17-multiprocess:MessageClient'
+include 'hw17-multiprocess:DBServer'
+include 'hw17-multiprocess:Frontend'
