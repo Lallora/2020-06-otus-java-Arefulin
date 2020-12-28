@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.3.1.RELEASE'
+    id 'jacoco'
+}
+
+
+sourceCompatibility = JavaVersion.VERSION_14
+targetCompatibility = JavaVersion.VERSION_14
+
+dependencies {
+    implementation project(':hw17-multiprocess:MessageClient')
+    implementation project(':hw17-multiprocess:MessageServer')
+
+    implementation 'com.h2database:h2'
+    implementation 'javax.persistence:javax.persistence-api'
+
+    implementation 'org.hibernate:hibernate-core'
+    implementation 'com.google.code.gson:gson'
+
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
+
+    implementation("org.webjars:webjars-locator-core")
+    implementation("org.webjars:sockjs-client:${Versions.sockjs}")
+    implementation("org.webjars:stomp-websocket:${Versions.stomp}")
+    implementation("org.webjars:bootstrap:${Versions.bootstrap}")
+
+    testImplementation 'org.assertj:assertj-core'
+    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+check.dependsOn jacocoTestReport

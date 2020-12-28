@@ -27,6 +27,12 @@
             <option value="$PROJECT_DIR$/hw14-warMvc" />
             <option value="$PROJECT_DIR$/hw15-threads" />
             <option value="$PROJECT_DIR$/hw16-MessageSystem" />
+            <option value="$PROJECT_DIR$/hw17-multiprocess" />
+            <option value="$PROJECT_DIR$/hw17-multiprocess/DBServer" />
+            <option value="$PROJECT_DIR$/hw17-multiprocess/Frontend" />
+            <option value="$PROJECT_DIR$/hw17-multiprocess/MessageClient" />
+            <option value="$PROJECT_DIR$/hw17-multiprocess/MessageServer" />
+            <option value="$PROJECT_DIR$/hw17-multiprocess/MessageSystem" />
             <option value="$PROJECT_DIR$/messagesystem" />
           </set>
         </option>
