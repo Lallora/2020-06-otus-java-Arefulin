@@ -3,6 +3,8 @@
 #
 # These are explicitly windows files and should use crlf
 *.bat           text eol=crlf
-
-*.css linguist-language=Java
+*.css linguist-detectable=false
+*.py linguist-detectable=false
+*.java linguist-detectable=true
+*.java linguist-language=Java
 
